@@ -1,9 +1,9 @@
 {
-  "name": "fxhash-boilerplate-webpack",
-  "version": "1.1.1",
-  "description": "a boilerplate to create a generative token on fxhash, with webpack, p5js and GNU Affero. Based on original work from fxhash.xyz",
+  "name": "uni-the-vegan-unicorn",
+  "version": "1.0.0",
+  "description": "Generative Game for fxhash.xyz",
   "main": "index.js",
-  "author": "fxhash, iuriguilherme",
+  "author": "iuriguilherme, benhurmichel",
   "license": "GNU AGPLv3",
   "scripts": {
     "build": "webpack --config ./config/webpack.config.prod.js",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "mathjs": "^11.5.1",
-    "p5": "^1.5.0"
+    "phaser": "^3.55.2"
   },
   "devDependencies": {
     "adm-zip": "^0.5.9",
