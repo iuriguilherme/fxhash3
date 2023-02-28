@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 1.3.0.1  
+ * @version 2.0.0.0  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -25,16 +25,17 @@ import { create as mcreate, all } from 'mathjs';
 const math = mcreate(all, {})
 import Phaser from 'phaser';
 
+const version = "2.0.0";
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // https://github.com/fxhash/fxhash-webpack-boilerplate/issues/20
 const properAlphabet = 
     "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 const variantFactor = 3.904e-87; // This number is magic
 const fxhashDecimal = base58toDecimal(fxhashTrunc);
-const featureVariant = fxHashToVariant(fxhashDecimal, 1);
-//~ const featureVariant = -1;
 
-const config = {
+let scm = 0.45;
+
+let config = {
   "type": Phaser.AUTO,
   "width": 800,
   "height": 600,
@@ -72,16 +73,15 @@ let gameOver = false;
 let lastMove = "right";
 
 function preload () {
-  this.load.image("sky", "sky2.png");
+  this.load.image("sky", "sky.png");
   this.load.image("ground", "platform.png");
   this.load.image("ground2", "platform2.png");
   this.load.image("star", "star.png");
   this.load.image("bomb", "bomb.png");
-  this.load.image("camiseta", "camiseta2.png");
   this.load.image("over", "over.png");
   this.load.spritesheet(
     "dude",
-    "dude2.png",
+    "dude.png",
     {
       "frameWidth": 178,
       "frameHeight": 198
@@ -89,14 +89,26 @@ function preload () {
   );
 }
 
-function create () {
+function create() {
+  console.log("featureVariant: " + featureVariant);
+  console.log("version: " + version);
+  console.log("platforms:");
+  let info = Object.keys(this.sys.game.device.os).filter(
+      key => this.sys.game.device.os[key] && key !== 'pixelRatio');
+  for (let i = 0; i < info.length; i++) {
+    console.log(info[i]);
+  }
   this.add.image(400, 300, "sky").setScale(0.4);
   platforms = this.physics.add.staticGroup();
   platforms.create(400, 568, "ground2").setScale(1).refreshBody();
-  platforms.create(600, 400, "ground").setScale(1);
-  platforms.create(50, 250, "ground").setScale(1);
-  platforms.create(750, 220, "ground").setScale(1);
-  player = this.physics.add.sprite(100, 450, "dude").setScale(0.5);
+  for (let i = 1; i < platformsMap[featureVariant].length; i++) {
+    platforms.create(
+      platformsMap[featureVariant][i][0],
+      platformsMap[featureVariant][i][1],
+      "ground"
+    );
+  }
+  player = this.physics.add.sprite(100, 450, "dude").setScale(0.5 * scm);
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
   this.anims.create({
@@ -168,16 +180,17 @@ function create () {
   cursors = this.input.keyboard.createCursorKeys();
   stars = this.physics.add.group({
     "key": "star",
-    "repeat": 11,
+    "repeat": 13,
     "setXY": {
       "x": 12,
       "y": 0,
-      "stepX": 70
+      "stepX": 60,
+      "stepY": 30
     },
   });
   stars.children.iterate(function (child) {
-    child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    child.setScale(0.2);
+    child.setBounceY(fxrand());
+    child.setScale(0.2 * scm);
   });
   bombs = this.physics.add.group();
   vegcoinsText = this.add.text(
@@ -229,14 +242,14 @@ function update () {
   }
   if (player.body.touching.down) {
     if (cursors.up.isDown) {
-      player.setVelocityY(-330);
+      player.setVelocityY(-330 * (scm * 1.5));
       player.anims.play("jump_" + lastMove, true);
     } else if (cursors.left.isDown) {
-      player.setVelocityX(-160);
+      player.setVelocityX(-160 * (scm * 1.5));
       player.anims.play("left", true);
       lastMove = "left";
     } else if (cursors.right.isDown) {
-      player.setVelocityX(160);
+      player.setVelocityX(160 * (scm * 1.5));
       player.anims.play("right", true);
       lastMove = "right";
     } else {
@@ -245,11 +258,11 @@ function update () {
     }
   } else {
     if (cursors.left.isDown) {
-      player.setVelocityX(-160);
+      player.setVelocityX(-160 * (scm * 1.5));
       lastMove = "left";
       player.anims.play("jump_" + lastMove, true);
     } else if (cursors.right.isDown) {
-      player.setVelocityX(160);
+      player.setVelocityX(160 * (scm * 1.5));
       lastMove = "right";
       player.anims.play("jump_" + lastMove, true);
     } else {
@@ -265,14 +278,20 @@ function collectStar (player, star) {
   vegcoinsText.setText("VegCoins: " + vegcoins);
   if (stars.countActive(true) === 0) {
     stars.children.iterate(function (child) {
-      child.enableBody(true, child.x, 0, true, true);
+      child.enableBody(
+        true,
+        child.x,
+        math.round(fxrand() * 450),
+        true,
+        true
+      );
     });
     let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : 
       Phaser.Math.Between(0, 400);
-    let bomb = bombs.create(x, 16, "bomb").setScale(0.36);
+    let bomb = bombs.create(x, 16, "bomb").setScale(0.36 * scm);
     bomb.setBounce(1);
     bomb.setCollideWorldBounds(true);
-    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    bomb.setVelocity(fxrand() * 400 - 200, 20);
     bomb.allowGravity = false;
   }
 }
@@ -299,7 +318,6 @@ function hitBomb (player, bomb) {
       align: "center"
     }
   );
-  //~ this.add.image(400, 300, "camiseta").setScale(0.6);
   this.physics.pause();
   player.setTint(0xff0000);
   player.anims.play("jump_" + lastMove);
@@ -337,6 +355,20 @@ function fxHashToVariant(decimalHash, maxVariants = 0, inverse = false) {
     return variant;
 }
 
+const platformsMap = [
+  [
+    "zero",
+    [100, 470],
+    [600, 400],
+    [700, 320],
+    [100, 250],
+    [750, 240],
+    [400, 160],
+  ]
+];
+const featureVariant = fxHashToVariant(fxhashDecimal, platformsMap.length - 1);
+//~ const featureVariant = 0;
+
 window.$fxhashFeatures = {
-  "fx(variant)": featureVariant
+  "fx(level)": featureVariant
 }
