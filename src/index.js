@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 1.1.0.0  
+ * @version 1.2.0.0  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -74,20 +74,12 @@ let gameOver = false;
 let lastMove = "right";
 
 function preload () {
-  this.load.image("sky", "sky.png");
+  this.load.image("sky", "sky2.png");
   this.load.image("ground", "platform.png");
   this.load.image("ground2", "platform2.png");
   this.load.image("star", "star.png");
   this.load.image("bomb", "bomb.png");
-  this.load.image("camiseta", "camiseta.png");
-  //~ this.load.spritesheet(
-    //~ "dude",
-    //~ "dude.png",
-    //~ {
-      //~ "frameWidth": 178,
-      //~ "frameHeight": 198
-    //~ }
-  //~ );
+  this.load.image("camiseta", "camiseta2.png");
   this.load.spritesheet(
     "dude",
     "dude2.png",
@@ -276,14 +268,10 @@ function update () {
 
 function collectStar (player, star) {
   introText.destroy();
-
   star.disableBody(true, true);
-  //  Add and update the score
   vegcoins += 1;
   vegcoinsText.setText("VegCoins: " + vegcoins);
-
   if (stars.countActive(true) === 0) {
-    //  A new batch of stars to collect
     stars.children.iterate(function (child) {
       child.enableBody(true, child.x, 0, true, true);
     });
@@ -297,9 +285,9 @@ function collectStar (player, star) {
 }
 
 function hitBomb (player, bomb) {
-  over1Text = this.add.text(200, 300, "Unicórnios", { font: "64px Monospace", fill: "#e8e8e8", align: "center" });
-  over2Text = this.add.text(100, 430, "não comem carne!", { font: "64px Monospace", fill: "#e8e8e8", align: "center" });
-  //~ this.add.image(400, 300, "camiseta").setScale(0.6);
+  //~ over1Text = this.add.text(200, 300, "Unicórnios", { font: "64px Monospace", fill: "#e8e8e8", align: "center" });
+  //~ over2Text = this.add.text(100, 430, "não comem carne!", { font: "64px Monospace", fill: "#e8e8e8", align: "center" });
+  this.add.image(400, 300, "camiseta").setScale(0.6);
   this.physics.pause();
   player.setTint(0xff0000);
   player.anims.play("jump_" + lastMove);
