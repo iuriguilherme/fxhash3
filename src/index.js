@@ -201,7 +201,7 @@ function create () {
   introText = this.add.text(
     90,
     160,
-    "Use direction keys to move left / rigth\njump with up key",
+    "Use direction keys to move left / right\njump with up key",
     {
       "font": "24px Arial",
       "fill": "#fafafa",
