@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 1.2.0.0  
+ * @version 1.3.0.0  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -21,10 +21,8 @@
  * 
  */
 
-//~ import p5 from 'p5';
 import { create as mcreate, all } from 'mathjs';
 const math = mcreate(all, {})
-//~ const phaser = require("phaser")
 import Phaser from 'phaser';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -80,6 +78,7 @@ function preload () {
   this.load.image("star", "star.png");
   this.load.image("bomb", "bomb.png");
   this.load.image("camiseta", "camiseta2.png");
+  this.load.image("over", "over.png");
   this.load.spritesheet(
     "dude",
     "dude2.png",
@@ -91,19 +90,12 @@ function preload () {
 }
 
 function create () {
-  // Fundo
   this.add.image(400, 300, "sky").setScale(0.4);
-
   platforms = this.physics.add.staticGroup();
-  // Chão
   platforms.create(400, 568, "ground2").setScale(1).refreshBody();
-  //~ platforms.create(400, 568, "ground2").setScale(2).refreshBody();
-  // Plataformas
   platforms.create(600, 400, "ground").setScale(1);
   platforms.create(50, 250, "ground").setScale(1);
   platforms.create(750, 220, "ground").setScale(1);
-
-  // Uni
   player = this.physics.add.sprite(100, 450, "dude").setScale(0.5);
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
@@ -173,9 +165,7 @@ function create () {
     ],
     "frameRate": 20
   });
-
   cursors = this.input.keyboard.createCursorKeys();
-
   // Vegcoins
   stars = this.physics.add.group({
     "key": "star",
@@ -190,9 +180,7 @@ function create () {
     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     child.setScale(0.2);
   });
-
   bombs = this.physics.add.group();
-
   // Contagem de Vegcoins
   vegcoinsText = this.add.text(
     8,
@@ -206,7 +194,7 @@ function create () {
   animaisText = this.add.text(
     512,
     8,
-    "Animais prejudicados: 0",
+    "Animals killed: 0",
     {
       "fontSize": "20px",
       "fill": "#fafafa"
@@ -215,25 +203,30 @@ function create () {
   introText = this.add.text(
     90,
     160,
-    "Use as setas do teclado para mover\npule com seta para cima!",
+    "Use direction keys to move left / rigth\njump with up key",
     {
       "font": "24px Arial",
       "fill": "#fafafa",
       "align": "center"
     }
   );
-
   this.physics.add.collider(player, platforms);
   this.physics.add.collider(stars, platforms);
   this.physics.add.collider(bombs, platforms);
-
   this.physics.add.overlap(player, stars, collectStar, null, this);
   this.physics.add.collider(player, bombs, hitBomb, null, this);
 }
 
 function update () {
   if (gameOver) {
-    return;
+    if (cursors.down.isDown) {
+      this.registry.destroy();
+      this.events.off();﻿
+      this.scene.restart();﻿﻿﻿﻿
+      gameOver = false;
+    } else {
+      return;
+    }
   }
   if (player.body.touching.down) {
     if (cursors.up.isDown) {
@@ -275,7 +268,8 @@ function collectStar (player, star) {
     stars.children.iterate(function (child) {
       child.enableBody(true, child.x, 0, true, true);
     });
-    let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : 
+      Phaser.Math.Between(0, 400);
     let bomb = bombs.create(x, 16, "bomb").setScale(0.36);
     bomb.setBounce(1);
     bomb.setCollideWorldBounds(true);
@@ -285,9 +279,28 @@ function collectStar (player, star) {
 }
 
 function hitBomb (player, bomb) {
-  //~ over1Text = this.add.text(200, 300, "Unicórnios", { font: "64px Monospace", fill: "#e8e8e8", align: "center" });
-  //~ over2Text = this.add.text(100, 430, "não comem carne!", { font: "64px Monospace", fill: "#e8e8e8", align: "center" });
-  this.add.image(400, 300, "camiseta").setScale(0.6);
+  this.add.image(400, 300, "over").setScale(0.6);
+  this.add.text(
+    90,
+    300,
+    "Unicorns don't eat meat!",
+    {
+      font: "48px Monospace",
+      fill: "#e8e8e8",
+      align: "center"
+    }
+  );
+  this.add.text(
+    90,
+    441,
+    "press DOWN key to restart",
+    {
+      font: "48px Monospace",
+      fill: "#e8e8e8",
+      align: "center"
+    }
+  );
+  //~ this.add.image(400, 300, "camiseta").setScale(0.6);
   this.physics.pause();
   player.setTint(0xff0000);
   player.anims.play("jump_" + lastMove);
