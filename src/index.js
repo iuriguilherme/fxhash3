@@ -166,7 +166,6 @@ function create () {
     "frameRate": 20
   });
   cursors = this.input.keyboard.createCursorKeys();
-  // Vegcoins
   stars = this.physics.add.group({
     "key": "star",
     "repeat": 11,
@@ -181,7 +180,6 @@ function create () {
     child.setScale(0.2);
   });
   bombs = this.physics.add.group();
-  // Contagem de Vegcoins
   vegcoinsText = this.add.text(
     8,
     8,
@@ -192,7 +190,7 @@ function create () {
     }
   );
   animaisText = this.add.text(
-    512,
+    584,
     8,
     "Animals killed: 0",
     {
