@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 2.1.1.0  
+ * @version 2.2.0.0  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -25,7 +25,7 @@ import { create as mcreate, all } from 'mathjs';
 const math = mcreate(all, {})
 import Phaser from 'phaser';
 
-const version = "2.0.0";
+const version = "2.2.0";
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // https://github.com/fxhash/fxhash-webpack-boilerplate/issues/20
 const properAlphabet = 
@@ -74,6 +74,7 @@ let introText;
 let over1Text;
 let over2Text;
 
+let level = 1;
 let vegcoins = 0;
 let gameOver = false;
 let lastMove = "right";
@@ -241,6 +242,7 @@ function update () {
       this.registry.destroy();
       this.events.off();﻿
       this.scene.restart();﻿﻿﻿﻿
+      level = 1;
       vegcoins = 0;
       gameOver = false;
     } else {
@@ -281,8 +283,8 @@ function update () {
 function collectStar (player, star) {
   introText.destroy();
   star.disableBody(true, true);
-  vegcoins += 1;
-  vegcoinsText.setText("VegCoins: " + vegcoins);
+  vegcoins += level;
+  vegcoinsText.setText("VegCoins: " + vegcoins + "(x" + level + ")");
   if (stars.countActive(true) === 0) {
     stars.children.iterate(function (child) {
       child.enableBody(
@@ -300,6 +302,8 @@ function collectStar (player, star) {
     bomb.setCollideWorldBounds(true);
     bomb.setVelocity(fxrand() * 400 - 200, 20);
     bomb.allowGravity = false;
+    level += 1;
+    vegcoinsText.setText("VegCoins: " + vegcoins + "(x" + level + ")");
   }
 }
 
@@ -331,6 +335,31 @@ function hitBomb (player, bomb) {
   gameOver = true;
 }
 
+const platformsMap = [
+  [
+    "Zero",
+    [100, 470],
+    [600, 390],
+    [700, 310],
+    [100, 230],
+    [750, 230],
+    [400, 150],
+  ],
+  [
+    "Meet in the Middle",
+    [400, 470],
+    [100, 390],
+    [700, 390],
+    [400, 310],
+    [100, 230],
+    [700, 230],
+    [400, 150],
+  ],
+];
+
+//~ const featureVariant = fxHashToVariant(fxhashDecimal, platformsMap.length - 1);
+const featureVariant = 0;
+
 /**
  * @param {String} hash: unique fxhash string (or xtz transaction hash)
  * @returns {float} decimal representation of the number in base58 
@@ -361,30 +390,6 @@ function fxHashToVariant(decimalHash, maxVariants = 0, inverse = false) {
     }
     return variant;
 }
-
-const platformsMap = [
-  [
-    "Zero",
-    [100, 470],
-    [600, 400],
-    [700, 320],
-    [100, 250],
-    [750, 240],
-    [400, 160],
-  ],
-  [
-    "Meet in the Middle",
-    [400, 470],
-    [100, 390],
-    [700, 390],
-    [400, 310],
-    [100, 230],
-    [700, 230],
-    [400, 150],
-  ],
-];
-const featureVariant = fxHashToVariant(fxhashDecimal, platformsMap.length - 1);
-//~ const featureVariant = 1;
 
 window.addEventListener(
   "resize",
