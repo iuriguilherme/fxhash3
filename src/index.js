@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 2.1.0.0  
+ * @version 2.1.1.0  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -364,17 +364,27 @@ function fxHashToVariant(decimalHash, maxVariants = 0, inverse = false) {
 
 const platformsMap = [
   [
-    "zero",
+    "Zero",
     [100, 470],
     [600, 400],
     [700, 320],
     [100, 250],
     [750, 240],
     [400, 160],
-  ]
+  ],
+  [
+    "Meet in the Middle",
+    [400, 470],
+    [100, 390],
+    [700, 390],
+    [400, 310],
+    [100, 230],
+    [700, 230],
+    [400, 150],
+  ],
 ];
 const featureVariant = fxHashToVariant(fxhashDecimal, platformsMap.length - 1);
-//~ const featureVariant = 0;
+//~ const featureVariant = 1;
 
 window.addEventListener(
   "resize",
@@ -382,5 +392,5 @@ window.addEventListener(
 );
 
 window.$fxhashFeatures = {
-  "fx(level)": platformsMap[featureVariant][0]
+  "Level": platformsMap[featureVariant][0]
 }
