@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 2.0.0.0  
+ * @version 2.1.0.0  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -51,8 +51,14 @@ let config = {
     "preload": preload,
     "create": create,
     "update": update
+  },
+  "scale": {
+    "mode": Phaser.Scale.NONE,
+    "zoom": Phaser.Scale.MAX_ZOOM
   }
 };
+
+
 
 let game = new Phaser.Game(config);
 
@@ -91,6 +97,7 @@ function preload () {
 
 function create() {
   console.log("featureVariant: " + featureVariant);
+  console.log("level: " + platformsMap[featureVariant][0]);
   console.log("version: " + version);
   console.log("platforms:");
   let info = Object.keys(this.sys.game.device.os).filter(
@@ -180,11 +187,11 @@ function create() {
   cursors = this.input.keyboard.createCursorKeys();
   stars = this.physics.add.group({
     "key": "star",
-    "repeat": 13,
+    "repeat": 14,
     "setXY": {
       "x": 12,
       "y": 0,
-      "stepX": 60,
+      "stepX": 54,
       "stepY": 30
     },
   });
@@ -369,6 +376,11 @@ const platformsMap = [
 const featureVariant = fxHashToVariant(fxhashDecimal, platformsMap.length - 1);
 //~ const featureVariant = 0;
 
+window.addEventListener(
+  "resize",
+  game.scale.setMaxZoom()
+);
+
 window.$fxhashFeatures = {
-  "fx(level)": featureVariant
+  "fx(level)": platformsMap[featureVariant][0]
 }
