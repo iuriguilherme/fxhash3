@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 1.3.0.0  
+ * @version 1.3.0.1  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -221,6 +221,7 @@ function update () {
       this.registry.destroy();
       this.events.off();﻿
       this.scene.restart();﻿﻿﻿﻿
+      vegcoins = 0;
       gameOver = false;
     } else {
       return;
