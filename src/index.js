@@ -1,6 +1,6 @@
 /**!
  * @file Uni the vegan unicorn  
- * @version 2.2.0.0  
+ * @version 2.3.0.0  
  * @copyright Iuri Guilherme 2023  
  * @license GNU AGPLv3  
  * @author Iuri Guilherme <https://iuri.neocities.org/>  
@@ -21,11 +21,13 @@
  * 
  */
 
-import { create as mcreate, all } from 'mathjs';
-const math = mcreate(all, {})
+import { create as mcreate, all as mall } from 'mathjs';
+const math = mcreate(mall, {})
 import Phaser from 'phaser';
+//~ import { SVG } from 'css.gg';
+//~ import { 'icons/svg/arrow_up_r.svg' as arrow_up } from 'css.gg';
 
-const version = "2.2.0";
+const version = "2.3.0";
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // https://github.com/fxhash/fxhash-webpack-boilerplate/issues/20
 const properAlphabet = 
@@ -70,9 +72,19 @@ let stars;
 
 let animaisText;
 let vegcoinsText;
-let introText;
+let introVegcoinsText;
+let introUpText;
+let introDownText;
+let introLeftText;
+let introRightText;
+let introShadow;
+let introSmallShadow;
 let over1Text;
 let over2Text;
+let arrowUp;
+let arrowDown;
+let arrowLeft;
+let arrowRight;
 
 let level = 1;
 let vegcoins = 0;
@@ -86,6 +98,7 @@ function preload () {
   this.load.image("star", "star.png");
   this.load.image("bomb", "bomb.png");
   this.load.image("over", "over.png");
+  this.load.image("over2", "over2.png");
   this.load.spritesheet(
     "dude",
     "dude.png",
@@ -94,6 +107,10 @@ function preload () {
       "frameHeight": 198
     }
   );
+  this.load.svg("arrow_up", "arrow-up-r.svg");
+  this.load.svg("arrow_down", "arrow-down-r.svg");
+  this.load.svg("arrow_left", "arrow-left-r.svg");
+  this.load.svg("arrow_right", "arrow-right-r.svg");
 }
 
 function create() {
@@ -219,16 +236,62 @@ function create() {
       "fill": "#fafafa"
     }
   );
-  introText = this.add.text(
-    90,
-    160,
-    "Use direction keys to move left / right\njump with up key",
+  introShadow = this.add.image(400, 300, "over").setScale(0.6);
+  introSmallShadow = this.add.image(400, 420, "over2").setScale(0.05);
+  introVegcoinsText = this.add.text(
+    215,
+    250,
+    "Collect the VegCoins!",
     {
-      "font": "24px Arial",
+      "fontSize": "32px",
       "fill": "#fafafa",
       "align": "center"
     }
   );
+  introUpText = this.add.text(
+    370,
+    360,
+    "Jump",
+    {
+      "fontSize": "24px",
+      "fill": "#fafafa",
+      "align": "center"
+    }
+  );
+  introDownText = this.add.text(
+    265,
+    450,
+    "Reset\n(when game is over)",
+    {
+      "fontSize": "24px",
+      "fill": "#fafafa",
+      "align": "center"
+    }
+  );
+  introLeftText = this.add.text(
+    220,
+    400,
+    "Move left",
+    {
+      "fontSize": "24px",
+      "fill": "#fafafa",
+      "align": "center"
+    }
+  );
+  introRightText = this.add.text(
+    450,
+    400,
+    "Move right",
+    {
+      "fontSize": "24px",
+      "fill": "#fafafa",
+      "align": "center"
+    }
+  );
+  arrowUp = this.add.image(400, 400, 'arrow_up');
+  arrowDown = this.add.image(400, 430, 'arrow_down');
+  arrowLeft = this.add.image(370, 430, 'arrow_left');
+  arrowRight = this.add.image(430, 430, 'arrow_right');
   this.physics.add.collider(player, platforms);
   this.physics.add.collider(stars, platforms);
   this.physics.add.collider(bombs, platforms);
@@ -281,7 +344,17 @@ function update () {
 }
 
 function collectStar (player, star) {
-  introText.destroy();
+  introShadow.destroy();
+  introSmallShadow.destroy();
+  introVegcoinsText.destroy();
+  introUpText.destroy();
+  introDownText.destroy();
+  introLeftText.destroy();
+  introRightText.destroy();
+  arrowUp.destroy();
+  arrowDown.destroy();
+  arrowLeft.destroy();
+  arrowRight.destroy();
   star.disableBody(true, true);
   vegcoins += level;
   vegcoinsText.setText("VegCoins: " + vegcoins + "(x" + level + ")");
@@ -310,23 +383,23 @@ function collectStar (player, star) {
 function hitBomb (player, bomb) {
   this.add.image(400, 300, "over").setScale(0.6);
   this.add.text(
-    90,
-    300,
+    100,
+    240,
     "Unicorns don't eat meat!",
     {
-      font: "48px Monospace",
-      fill: "#e8e8e8",
-      align: "center"
+      "fontSize": "42px",
+      "fill": "#e8e8e8",
+      "align": "center"
     }
   );
   this.add.text(
     90,
-    441,
+    330,
     "press DOWN key to restart",
     {
-      font: "48px Monospace",
-      fill: "#e8e8e8",
-      align: "center"
+      "fontSize": "42px",
+      "fill": "#e8e8e8",
+      "align": "center"
     }
   );
   this.physics.pause();
@@ -355,10 +428,33 @@ const platformsMap = [
     [700, 230],
     [400, 150],
   ],
+  [
+    "Stairway",
+    [470, 470],
+    [390, 390],
+    [310, 310],
+    [230, 230],
+    [150, 150],
+    [70, 70],
+  ],
+  [
+    "Ladder",
+    [720, 470],
+    [60, 470],
+    [735, 390],
+    [45, 390],
+    [750, 310],
+    [30, 310],
+    [765, 230],
+    [15, 230],
+    [780, 150],
+    [0, 150],
+    [400, 70],
+  ],
 ];
 
-//~ const featureVariant = fxHashToVariant(fxhashDecimal, platformsMap.length - 1);
-const featureVariant = 0;
+const featureVariant = fxHashToVariant(fxhashDecimal, platformsMap.length - 1);
+//~ const featureVariant = 3;
 
 /**
  * @param {String} hash: unique fxhash string (or xtz transaction hash)

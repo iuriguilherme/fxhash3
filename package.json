@@ -1,6 +1,6 @@
 {
   "name": "uni-the-vegan-unicorn",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Generative Game for fxhash.xyz",
   "main": "index.js",
   "author": "iuriguilherme, benhurmichel",
@@ -10,6 +10,7 @@
     "start": "webpack serve --config ./config/webpack.config.dev.js"
   },
   "dependencies": {
+    "css.gg": "^2.0.0",
     "mathjs": "^11.5.1",
     "phaser": "^3.55.2"
   },
